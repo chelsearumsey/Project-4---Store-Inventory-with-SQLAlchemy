@@ -10,36 +10,17 @@ def main_menu():
     while True:
         print('''
             \nPRODUCT INVENTORY
-            \r1) Add product
-            \r2) View all products
-            \r3) Search for product
-            \r4) Product Analysis
-            \r5) Exit
+            \r* Enter "v" to view specific product details
+            \r* Enter "a" to add a new product to the inventory
+            \r* Enter "b" to make a backup of the entire inventory contents
+            \r* Enter "e" to exit product inventory
             ''')
-        choice = input('What would you like to do? ')
-        if choice in ['1', '2', '3', '4', '5']:
+        choice = input('What would you like to do? ').lower()
+        if choice in ['v', 'a', 'b', 'e']:
             return choice
         else:
             input('''
                 \rPlease choose one of the options above. 
-                \rA number from 1-5.
-                \rPress enter to try again.
-                ''')
-            
-def submenu():
-    while True:
-        print('''
-                \n1) Edit
-                \r2) Delete
-                \r3) Return to main menu
-                ''')
-        choice = input('What would you like to do? ')
-        if choice in ['1', '2', '3']:
-            return choice
-        else:
-            input('''
-                \rPlease choose one of the options above. 
-                \rA number from 1-3.
                 \rPress enter to try again.
                 ''')
 
