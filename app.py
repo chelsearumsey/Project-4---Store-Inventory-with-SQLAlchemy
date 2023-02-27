@@ -1,6 +1,6 @@
 
 from models import (Base, session,
-                    Inventory, engine)
+                    Product, engine)
 import csv
 import datetime
 import time
