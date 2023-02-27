@@ -6,7 +6,7 @@ import datetime
 import time
 
 
-def main_menu():
+def menu():
     while True:
         print('''
             \nPRODUCT INVENTORY
@@ -106,6 +106,23 @@ def add_csv():
                 session.add(new_product)
         session.commit()
 
+
+def app():
+    app_running = True
+    while app_running:
+        choice = menu()
+        if choice == 'v':
+            pass
+        elif choice == 'a':
+            pass
+        elif choice == 'b':
+            pass
+        else:
+            print('THANKS FOR CHECKING THE INVENTORY!')
+            app_running = False
+
+
 if __name__ == '__main__':
     Base.metadata.create_all(engine)
     add_csv()
+    app()
