@@ -6,6 +6,44 @@ import datetime
 import time
 
 
+def main_menu():
+    while True:
+        print('''
+            \nPRODUCT INVENTORY
+            \r1) Add product
+            \r2) View all products
+            \r3) Search for product
+            \r4) Product Analysis
+            \r5) Exit
+            ''')
+        choice = input('What would you like to do? ')
+        if choice in ['1', '2', '3', '4', '5']:
+            return choice
+        else:
+            input('''
+                \rPlease choose one of the options above. 
+                \rA number from 1-5.
+                \rPress enter to try again.
+                ''')
+            
+def submenu():
+    while True:
+        print('''
+                \n1) Edit
+                \r2) Delete
+                \r3) Return to main menu
+                ''')
+        choice = input('What would you like to do? ')
+        if choice in ['1', '2', '3']:
+            return choice
+        else:
+            input('''
+                \rPlease choose one of the options above. 
+                \rA number from 1-3.
+                \rPress enter to try again.
+                ''')
+
+
 def clean_product_id(id_str, options):
     try:
         product_id = int(id_str)
