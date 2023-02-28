@@ -112,9 +112,34 @@ def app():
     while app_running:
         choice = menu()
         if choice == 'v':
-            pass
+            for product in session.query(Product):
+                print(f'{product.product_id} | {product.product_name} | {product.product_quantity} | {product.product_price} | {product.date_updated}')
+            input('Press enter to return to the main menu.')
         elif choice == 'a':
-            pass
+            product_name = input('Product: ')
+            quantity_error = True
+            while quantity_error:
+                product_quantity = input('Quantity (Enter a whole number): ')
+                quantity = clean_product_quantity(product_quantity)
+                if type(quantity) == int:
+                    quantity_error = False
+            price_error = True
+            while price_error:
+                product_price = input('Price (Example: 9.99): ')
+                price = clean_product_price(product_price)
+                if type(price) == int:
+                    price_error = False
+            date_updated_error = True
+            while date_updated_error:
+                date_updated = input('Date Updated: (Example: February 27, 2023): ')
+                date = clean_date_updated(date_updated)
+                if type(date) == datetime.date:
+                    date_updated_error = False
+            new_product = Product(product_name=product, product_quantity=quantity, product_price=price, date_updated=date)
+            session.add(new_product)
+            session.commit()
+            print('Product added!')
+            time.sleep(1.5)
         elif choice == 'b':
             pass
         else:
