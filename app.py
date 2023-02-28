@@ -59,8 +59,10 @@ def clean_product_quantity(quantity_str):
         return int(product_quantity)
 
 def clean_product_price(price_str):
+    price_str = price_str.split('$')[1]
     try:
         price_float = float(price_str)
+        print(price_float)
     except ValueError:
         input('''
             \n****** PRICE ERROR ******
@@ -72,24 +74,23 @@ def clean_product_price(price_str):
         return int(price_float * 100)
     
 def clean_date_updated(date_str):
-    months = ['January', 'February', 'March', 'April', 'May', 'June', 
-              'July', 'August', 'September', 'October', 'November', 'December']
-    split_date = date_str.split(' ')
+    clean_date = date_str.split('/')
     try:
-        month = int(months.index(split_date[0]) + 1)
-        day = int(split_date[1].split(',')[0])
-        year = int(split_date[2])
-        return_date = datetime.date(year, month, day)
+        month = int(month)
+        day = int(day)
+        year = int(year)
+        clean_date = datetime.date(year, month, day)
     except ValueError:
         input('''
             \n****** DATE ERROR ******
-            \rThe date format should include a valid Month, Day, Year.
-            \rExample: December 14, 2022
+            \rThe date format should include a valid numeric Month/Day/Year.
+            \rExample: 12/14/2022
             \rPress enter to try again.
             \r************************''')
         return
     else:
-        return return_date
+        print(clean_date)
+        return clean_date
 
 
 def add_csv():
@@ -104,6 +105,7 @@ def add_csv():
                 date = clean_date_updated(row[3])
                 new_product = Product(product_name=product, product_quantity=quantity, product_price=price, date_updated=date)
                 session.add(new_product)
+                print(new_product)
         session.commit()
 
 
