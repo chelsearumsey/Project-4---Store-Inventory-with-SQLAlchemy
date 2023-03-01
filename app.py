@@ -59,9 +59,9 @@ def clean_product_quantity(quantity_str):
         return int(product_quantity)
 
 def clean_product_price(price_str):
-    price_str = price_str.split('$')[1]
+    price_float = float(price_str.split('$')[1])
     try:
-        price_float = float(price_str)
+        price_float
         print(price_float)
     except ValueError:
         input('''
@@ -76,9 +76,9 @@ def clean_product_price(price_str):
 def clean_date_updated(date_str):
     clean_date = date_str.split('/')
     try:
-        month = int(month)
-        day = int(day)
-        year = int(year)
+        month = int(clean_date[0])
+        day = int(clean_date[1])
+        year = int(clean_date[2])
         clean_date = datetime.date(year, month, day)
     except ValueError:
         input('''
@@ -94,14 +94,17 @@ def clean_date_updated(date_str):
 
 
 def add_csv():
-    with open('inventory.csv') as csvfile:
-        data = csv.reader(csvfile)
-        for row in data:
+    with open('inventory.csv', 'r', newline='') as csvfile:
+        product_data = csv.reader(csvfile)
+        # Referenced https://stackoverflow.com/questions/14674275/skip-first-linefield-in-loop-using-csv-file
+        next(product_data)
+        for row in product_data:
             product_in_db = session.query(Product).filter(Product.product_name==row[0]).one_or_none()
             if product_in_db == None:
                 product = row[0]
-                quantity = row[1]
-                price = clean_product_price(row[2])
+                print(row[1])
+                price = clean_product_price(row[1])
+                quantity = row[2]
                 date = clean_date_updated(row[3])
                 new_product = Product(product_name=product, product_quantity=quantity, product_price=price, date_updated=date)
                 session.add(new_product)
@@ -133,7 +136,7 @@ def app():
                     price_error = False
             date_updated_error = True
             while date_updated_error:
-                date_updated = input('Date Updated: (Example: February 27, 2023): ')
+                date_updated = input('Date Updated: (Example: 2/27/2023): ')
                 date = clean_date_updated(date_updated)
                 if type(date) == datetime.date:
                     date_updated_error = False
@@ -152,4 +155,5 @@ def app():
 if __name__ == '__main__':
     Base.metadata.create_all(engine)
     add_csv()
+    # clean_date_updated('11/1/2022')
     app()
