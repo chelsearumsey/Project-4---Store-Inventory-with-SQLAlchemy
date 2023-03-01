@@ -10,7 +10,7 @@ def menu():
     while True:
         print('''
             \nPRODUCT INVENTORY
-            \r* Enter "v" to view specific product details
+            \r* Enter "v" to view specific product details by product ID
             \r* Enter "a" to add a new product to the inventory
             \r* Enter "b" to make a backup of the entire inventory contents
             \r* Enter "e" to exit product inventory
@@ -25,7 +25,7 @@ def menu():
                 ''')
 
 
-def clean_product_id(id_str, options):
+def clean_product_id(id_str):
     try:
         product_id = int(id_str)
     except ValueError:
@@ -36,15 +36,26 @@ def clean_product_id(id_str, options):
             \r************************''')
         return
     else:
-        if product_id in options:
-            return product_id
-        else:
-            input(f'''
-            \n****** ID ERROR ******
-            \rOptions: {options}
-            \rPress enter to try again.
-            \r************************''')
-            return
+        return product_id
+        
+def view_by_product_id(chosen_id):
+    id_options = []
+    for product in session.query(Product):
+        id_options.append(product.product_id)
+    id_error = True
+    while id_error:   
+        chosen_id = input(f'''
+            \nId Options: {id_options}
+            \rProduct id: ''')
+        chosen_id = clean_product_id(chosen_id)
+        if type(chosen_id) == int:
+            id_error = False
+    chosen_product = session.query(Product).filter(Product.id==chosen_id).first()
+    print(f'''
+        \n{chosen_product.product_name}
+        \rQuantity: {chosen_product.product_quantity}
+        \rPrice: ${chosen_product.product_price / 100}
+        \rDate Updated: {chosen_product.date_updated}''')
 
 def clean_product_quantity(quantity_str):
     try:
@@ -62,7 +73,6 @@ def clean_product_price(price_str):
     price_float = float(price_str.split('$')[1])
     try:
         price_float
-        print(price_float)
     except ValueError:
         input('''
             \n****** PRICE ERROR ******
@@ -89,7 +99,6 @@ def clean_date_updated(date_str):
             \r************************''')
         return
     else:
-        print(clean_date)
         return clean_date
 
 
@@ -102,13 +111,11 @@ def add_csv():
             product_in_db = session.query(Product).filter(Product.product_name==row[0]).one_or_none()
             if product_in_db == None:
                 product = row[0]
-                print(row[1])
                 price = clean_product_price(row[1])
                 quantity = row[2]
                 date = clean_date_updated(row[3])
                 new_product = Product(product_name=product, product_quantity=quantity, product_price=price, date_updated=date)
                 session.add(new_product)
-                print(new_product)
         session.commit()
 
 
@@ -117,8 +124,9 @@ def app():
     while app_running:
         choice = menu()
         if choice == 'v':
-            for product in session.query(Product):
-                print(f'{product.product_id} | {product.product_name} | {product.product_quantity} | {product.product_price} | {product.date_updated}')
+            chosen_id = input("Enter the id of the product you'd like to view. ")
+            chosen_id = clean_product_id(chosen_id)
+            view_by_product_id(chosen_id)
             input('Press enter to return to the main menu.')
         elif choice == 'a':
             product_name = input('Product: ')
@@ -140,7 +148,7 @@ def app():
                 date = clean_date_updated(date_updated)
                 if type(date) == datetime.date:
                     date_updated_error = False
-            new_product = Product(product_name=product, product_quantity=quantity, product_price=price, date_updated=date)
+            new_product = Product(product_name=product_name, product_quantity=quantity, product_price=price, date_updated=date)
             session.add(new_product)
             session.commit()
             print('Product added!')
@@ -155,5 +163,4 @@ def app():
 if __name__ == '__main__':
     Base.metadata.create_all(engine)
     add_csv()
-    # clean_date_updated('11/1/2022')
     app()
