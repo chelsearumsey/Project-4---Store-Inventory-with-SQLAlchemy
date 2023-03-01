@@ -27,7 +27,7 @@ def menu():
 
 def clean_product_id(id_str):
     try:
-        product_id = int(id_str)
+        clean_product_id = int(id_str)
     except ValueError:
         input('''
             \n****** ID ERROR ******
@@ -36,30 +36,33 @@ def clean_product_id(id_str):
             \r************************''')
         return
     else:
-        return product_id
+        return clean_product_id
         
 def view_by_product_id(chosen_id):
     id_options = []
     for product in session.query(Product):
-        id_options.append(product.product_id)
-    id_error = True
-    while id_error:   
-        chosen_id = input(f'''
-            \nId Options: {id_options}
-            \rProduct id: ''')
-        chosen_id = clean_product_id(chosen_id)
-        if type(chosen_id) == int:
-            id_error = False
-    chosen_product = session.query(Product).filter(Product.id==chosen_id).first()
+        if product.product_id > 1:
+            id_options.append(product.product_id)
+    if chosen_id not in id_options:
+        id_error = True
+        while id_error:
+            chosen_id = input(f'''
+                \nId Options: {id_options}
+                \rProduct id: ''')
+            chosen_id = clean_product_id(chosen_id)
+            if type(chosen_id) == int and chosen_id in id_options:
+                id_error = False
+    chosen_product = session.query(Product).filter(Product.product_id==chosen_id).first()
+   #Referenced https://www.enthought.com/no-zero-padding-with-strftime/
     print(f'''
         \n{chosen_product.product_name}
         \rQuantity: {chosen_product.product_quantity}
         \rPrice: ${chosen_product.product_price / 100}
-        \rDate Updated: {chosen_product.date_updated}''')
+        \rDate Updated: {chosen_product.date_updated.strftime("%#m/%#d/%Y")}''')
 
 def clean_product_quantity(quantity_str):
     try:
-        product_quantity = int(quantity_str)
+        clean_product_quantity = int(quantity_str)
     except ValueError:
         input('''
             \n****** QUANTITY ERROR ******
@@ -67,12 +70,12 @@ def clean_product_quantity(quantity_str):
             \rPress enter to try again.
             \r************************''')
     else:
-        return int(product_quantity)
+        return clean_product_quantity
 
 def clean_product_price(price_str):
-    price_float = float(price_str.split('$')[1])
+    clean_product_price = float(price_str.split('$')[1])
     try:
-        price_float
+        clean_product_price
     except ValueError:
         input('''
             \n****** PRICE ERROR ******
@@ -81,15 +84,15 @@ def clean_product_price(price_str):
             \rPress enter to try again.
             \r************************''')
     else:
-        return int(price_float * 100)
+        return int(clean_product_price * 100)
     
 def clean_date_updated(date_str):
-    clean_date = date_str.split('/')
+    clean_date_updated = date_str.split('/')
     try:
-        month = int(clean_date[0])
-        day = int(clean_date[1])
-        year = int(clean_date[2])
-        clean_date = datetime.date(year, month, day)
+        month = int(clean_date_updated[0])
+        day = int(clean_date_updated[1])
+        year = int(clean_date_updated[2])
+        clean_date_updated = datetime.date(year, month, day)
     except ValueError:
         input('''
             \n****** DATE ERROR ******
@@ -99,7 +102,7 @@ def clean_date_updated(date_str):
             \r************************''')
         return
     else:
-        return clean_date
+        return clean_date_updated
 
 
 def add_csv():
