@@ -157,7 +157,12 @@ def app():
             print('Product added!')
             time.sleep(1.5)
         elif choice == 'b':
-            pass
+            # Referenced: https://stackoverflow.com/questions/54894264/how-to-make-copies-of-an-existing-csv-file-using-python
+            def copy_csv(filename):
+                import pandas as pd
+                df = pd.read_csv('file.csv')
+                df.to_csv('copy_of_' + 'file.csv')
+                copy_csv('file.csv')
         else:
             print('THANKS FOR CHECKING THE INVENTORY!')
             app_running = False
