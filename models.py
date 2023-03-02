@@ -12,8 +12,8 @@ class Product(Base):
     __tablename__ = 'products'
     product_id = Column(Integer, primary_key=True)
     product_name = Column('Product', String)
-    product_quantity = Column('Quantity', Integer)
     product_price = Column('Price', Integer)
+    product_quantity = Column('Quantity', Integer)
     date_updated = Column('Date Updated', Date)
 
     def __repr__(self):

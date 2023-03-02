@@ -38,39 +38,6 @@ def clean_product_id(id_str):
     else:
         return clean_product_id
         
-def view_by_product_id(chosen_id):
-    id_options = []
-    for product in session.query(Product):
-        if product.product_id > 1:
-            id_options.append(product.product_id)
-    if chosen_id not in id_options:
-        id_error = True
-        while id_error:
-            chosen_id = input(f'''
-                \nId Options: {id_options}
-                \rProduct id: ''')
-            chosen_id = clean_product_id(chosen_id)
-            if type(chosen_id) == int and chosen_id in id_options:
-                id_error = False
-    chosen_product = session.query(Product).filter(Product.product_id==chosen_id).first()
-   #Referenced https://www.enthought.com/no-zero-padding-with-strftime/
-    print(f'''
-        \n{chosen_product.product_name}
-        \rQuantity: {chosen_product.product_quantity}
-        \rPrice: ${chosen_product.product_price / 100}
-        \rDate Updated: {chosen_product.date_updated.strftime("%#m/%#d/%Y")}''')
-
-def clean_product_quantity(quantity_str):
-    try:
-        clean_product_quantity = int(quantity_str)
-    except ValueError:
-        input('''
-            \n****** QUANTITY ERROR ******
-            \rThe quantity should be a number.
-            \rPress enter to try again.
-            \r************************''')
-    else:
-        return clean_product_quantity
 
 def clean_product_price(price_str):
     clean_product_price = float(price_str.split('$')[1])
@@ -85,6 +52,20 @@ def clean_product_price(price_str):
             \r************************''')
     else:
         return int(clean_product_price * 100)
+    
+
+def clean_product_quantity(quantity_str):
+    try:
+        clean_product_quantity = int(quantity_str)
+    except ValueError:
+        input('''
+            \n****** QUANTITY ERROR ******
+            \rThe quantity should be a number.
+            \rPress enter to try again.
+            \r************************''')
+    else:
+        return clean_product_quantity
+
     
 def clean_date_updated(date_str):
     clean_date_updated = date_str.split('/')
@@ -115,12 +96,50 @@ def add_csv():
             if product_in_db == None:
                 product = row[0]
                 price = clean_product_price(row[1])
-                quantity = row[2]
+                quantity = clean_product_quantity(row[2])
                 date = clean_date_updated(row[3])
-                new_product = Product(product_name=product, product_quantity=quantity, product_price=price, date_updated=date)
+                new_product = Product(product_name=product, product_price=price, product_quantity=quantity, date_updated=date)
                 session.add(new_product)
         session.commit()
 
+
+def view_by_product_id(chosen_id):
+    id_options = []
+    for product in session.query(Product):
+        if product.product_id > 1:
+            id_options.append(product.product_id)
+    if chosen_id not in id_options:
+        id_error = True
+        while id_error:
+            chosen_id = input(f'''
+                \nId Options: {id_options}
+                \rProduct id: ''')
+            chosen_id = clean_product_id(chosen_id)
+            if type(chosen_id) == int and chosen_id in id_options:
+                id_error = False
+    chosen_product = session.query(Product).filter(Product.product_id==chosen_id).first()
+   #Referenced https://www.enthought.com/no-zero-padding-with-strftime/
+    print(f'''
+        \n{chosen_product.product_name}
+        \rPrice: ${chosen_product.product_price / 100}
+        \rQuantity: {chosen_product.product_quantity}
+        \rDate Updated: {chosen_product.date_updated.strftime("%#m/%#d/%Y")}''')
+    
+
+def add_backup_csv():
+    with open('backup.csv', 'w', newline='') as csvfile:
+        fieldnames = ['product_name', 'product_price', 'product_quantity',
+                      'date_updated']
+        writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
+        writer.writeheader()
+        for product in session.query(Product).all():
+            writer.writerow({
+                'product_name': product.product_name,
+                'product_price': '$' + str(product.product_price / 100),
+                'product_quantity': product.product_quantity,
+                'date_updated': product.date_updated.strftime("%#m/%#d/%Y")
+                })
+           
 
 def app():
     app_running = True
@@ -157,12 +176,7 @@ def app():
             print('Product added!')
             time.sleep(1.5)
         elif choice == 'b':
-            # Referenced: https://stackoverflow.com/questions/54894264/how-to-make-copies-of-an-existing-csv-file-using-python
-            def copy_csv(filename):
-                import pandas as pd
-                df = pd.read_csv('file.csv')
-                df.to_csv('copy_of_' + 'file.csv')
-                copy_csv('file.csv')
+            add_backup_csv()
         else:
             print('THANKS FOR CHECKING THE INVENTORY!')
             app_running = False
@@ -172,3 +186,5 @@ if __name__ == '__main__':
     Base.metadata.create_all(engine)
     add_csv()
     app()
+    add_backup_csv()
+    
