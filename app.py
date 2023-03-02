@@ -3,6 +3,7 @@ from models import (Base, session,
                     Product, engine)
 import csv
 import datetime
+from datetime import date
 import time
 
 
@@ -20,7 +21,7 @@ def menu():
             return choice
         else:
             input('''
-                \rPlease choose one of the options above. 
+                \rPlease choose a valid menu option. 
                 \rPress enter to try again.
                 ''')
 
@@ -53,6 +54,20 @@ def clean_product_price(price_str):
     else:
         return int(clean_product_price * 100)
     
+
+def clean_new_product_price(price_str):
+    try:
+        price_float = float(price_str)
+    except ValueError:
+        input('''
+            \n****** PRICE ERROR ******
+            \rThe price should be a number without a currency symbol.
+            \rExample: 6.99
+            \rPress enter to try again.
+            \r************************''')
+    else:
+        return int(price_float *100)
+
 
 def clean_product_quantity(quantity_str):
     try:
@@ -112,7 +127,8 @@ def view_by_product_id(chosen_id):
         id_error = True
         while id_error:
             chosen_id = input(f'''
-                \nId Options: {id_options}
+                \nThe product id you entered does not exist. 
+                \rId Options: {id_options}
                 \rProduct id: ''')
             chosen_id = clean_product_id(chosen_id)
             if type(chosen_id) == int and chosen_id in id_options:
@@ -152,34 +168,29 @@ def app():
             input('Press enter to return to the main menu.')
         elif choice == 'a':
             product_name = input('Product: ')
+            price_error = True
+            while price_error: 
+                product_price = input('Price (Example: 9.99): ')
+                new_product_price = clean_new_product_price(product_price)
+                if type(new_product_price) == int:
+                    price_error = False
             quantity_error = True
             while quantity_error:
                 product_quantity = input('Quantity (Enter a whole number): ')
                 quantity = clean_product_quantity(product_quantity)
                 if type(quantity) == int:
                     quantity_error = False
-            price_error = True
-            while price_error:
-                product_price = input('Price (Example: 9.99): ')
-                price = clean_product_price(product_price)
-                if type(price) == int:
-                    price_error = False
-            date_updated_error = True
-            while date_updated_error:
-                date_updated = input('Date Updated: (Example: 2/27/2023): ')
-                date = clean_date_updated(date_updated)
-                if type(date) == datetime.date:
-                    date_updated_error = False
-            new_product = Product(product_name=product_name, product_quantity=quantity, product_price=price, date_updated=date)
+            current_date = date.today()
+            new_product = Product(product_name=product_name, product_quantity=quantity, product_price=new_product_price, date_updated=current_date)
             session.add(new_product)
             session.commit()
             print('Product added!')
             time.sleep(1.5)
         elif choice == 'b':
             add_backup_csv()
-        else:
+        elif choice =='e':
             print('THANKS FOR CHECKING THE INVENTORY!')
-            app_running = False
+            app_running = False    
 
 
 if __name__ == '__main__':
