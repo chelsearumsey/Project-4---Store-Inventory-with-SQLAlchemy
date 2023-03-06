@@ -194,12 +194,29 @@ def app():
                 if type(quantity) == int:
                     quantity_error = False
             current_date = date.today() 
-            new_product = Product(product_name=product_name, product_quantity=quantity, 
-                                  product_price=new_product_price, date_updated=current_date)
-            session.add(new_product) 
-            session.commit()
-            print('Product added!')
-            time.sleep(1.5)
+            with open('inventory.csv', 'r', newline='') as csvfile:
+                product_data = csv.reader(csvfile)
+                next(product_data)
+                for row in product_data:
+                    product_in_db = session.query(Product).filter(Product.product_name==row[0]).one_or_none()
+                    if product_in_db == None:
+                        new_product = Product(product_name=product_name, product_quantity=quantity, 
+                                    product_price=new_product_price, date_updated=current_date)
+                        session.add(new_product) 
+                        print('Product added!')
+                        session.commit()
+                        time.sleep(1.5)
+                    else:
+                        pass
+                        # if product_in_db.date_updated < current_date:
+                        #     product_in_db.product_name = row[0]
+                        #     product_in_db.product_price = new_product_price
+                        #     product_in_db.product_quantity = quantity
+                        #     product_in_db.date_updated = current_date
+                        #     updated_product = Product(product_name=product_in_db.product_name, product_price=product_in_db.product_price, 
+                        #                                 product_quantity=product_in_db.product_quantity, date_updated=product_in_db.date_updated)
+                        #     session.add(updated_product)
+                        #     print('Product updated!')      
         elif choice == 'b':
             add_backup_csv()
         elif choice =='e':
