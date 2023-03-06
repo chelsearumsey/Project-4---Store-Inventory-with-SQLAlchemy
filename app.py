@@ -113,8 +113,20 @@ def add_csv():
                 price = clean_product_price(row[1])
                 quantity = clean_product_quantity(row[2])
                 date = clean_date_updated(row[3])
-                new_product = Product(product_name=product, product_price=price, product_quantity=quantity, date_updated=date)
+                new_product = Product(product_name=product, product_price=price, 
+                                        product_quantity=quantity, date_updated=date)
                 session.add(new_product)
+            else:
+                # print(product_in_db.product_name, product_in_db.date_updated)
+                # print(row[0], clean_date_updated(row[3]))
+                if product_in_db.date_updated < clean_date_updated(row[3]):
+                    product_in_db.product_name = row[0]
+                    product_in_db.product_price = clean_product_price(row[1])
+                    product_in_db.product_quantity = clean_product_quantity(row[2])
+                    product_in_db.date_updated = clean_date_updated(row[3])
+                    updated_product = Product(product_name=product_in_db.product_name, product_price=product_in_db.product_price, 
+                                                product_quantity=product_in_db.product_quantity, date_updated=product_in_db.date_updated)
+                    session.add(updated_product)
         session.commit()
 
 
@@ -165,6 +177,7 @@ def app():
             chosen_id = input("Enter the id of the product you'd like to view. ")
             chosen_id = clean_product_id(chosen_id)
             view_by_product_id(chosen_id)
+            time.sleep(1.5)
             input('Press enter to return to the main menu.')
         elif choice == 'a':
             product_name = input('Product: ')
@@ -180,9 +193,10 @@ def app():
                 quantity = clean_product_quantity(product_quantity)
                 if type(quantity) == int:
                     quantity_error = False
-            current_date = date.today()
-            new_product = Product(product_name=product_name, product_quantity=quantity, product_price=new_product_price, date_updated=current_date)
-            session.add(new_product)
+            current_date = date.today() 
+            new_product = Product(product_name=product_name, product_quantity=quantity, 
+                                  product_price=new_product_price, date_updated=current_date)
+            session.add(new_product) 
             session.commit()
             print('Product added!')
             time.sleep(1.5)
