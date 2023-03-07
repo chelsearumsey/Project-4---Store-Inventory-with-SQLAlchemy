@@ -146,7 +146,7 @@ def view_by_product_id(chosen_id):
         \n{chosen_product.product_name}
         \rPrice: ${chosen_product.product_price / 100}
         \rQuantity: {chosen_product.product_quantity}
-        \rDate Updated: {chosen_product.date_updated.strftime("%#m/%#d/%Y")}''')
+        \rDate Updated: {chosen_product.date_updated.strftime("%m/%d/%Y")}''')
     
 
 def add_backup_csv():
