@@ -117,16 +117,11 @@ def add_csv():
                                         product_quantity=quantity, date_updated=date)
                 session.add(new_product)
             else:
-                # print(product_in_db.product_name, product_in_db.date_updated)
-                # print(row[0], clean_date_updated(row[3]))
                 if product_in_db.date_updated < clean_date_updated(row[3]):
                     product_in_db.product_name = row[0]
                     product_in_db.product_price = clean_product_price(row[1])
                     product_in_db.product_quantity = clean_product_quantity(row[2])
                     product_in_db.date_updated = clean_date_updated(row[3])
-                    updated_product = Product(product_name=product_in_db.product_name, product_price=product_in_db.product_price, 
-                                                product_quantity=product_in_db.product_quantity, date_updated=product_in_db.date_updated)
-                    session.add(updated_product)
         session.commit()
 
 
@@ -206,16 +201,13 @@ def app():
                     product_in_db.product_price = new_product_price
                     product_in_db.product_quantity = quantity
                     product_in_db.date_updated = current_date
-                    updated_product = Product(product_name=product_in_db.product_name, product_price=product_in_db.product_price, 
-                                                product_quantity=product_in_db.product_quantity, date_updated=product_in_db.date_updated)
-                    session.add(updated_product)
                     print('Product updated!')
             session.commit()
             time.sleep(1.5)
         elif choice == 'b':
             add_backup_csv()
             time.sleep(1.5)
-            print('Backup CSV file created!')
+            print('Backup completed!')
         elif choice =='e':
             print('THANKS FOR CHECKING THE INVENTORY!')
             app_running = False    
