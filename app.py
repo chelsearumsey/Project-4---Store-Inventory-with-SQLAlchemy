@@ -128,7 +128,7 @@ def add_csv():
 def view_by_product_id(chosen_id):
     id_options = []
     for product in session.query(Product):
-        if product.product_id > 1:
+        if product.product_id >= 1:
             id_options.append(product.product_id)
     if chosen_id not in id_options:
         id_error = True
