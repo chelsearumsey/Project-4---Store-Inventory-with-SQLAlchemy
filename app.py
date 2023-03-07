@@ -160,7 +160,7 @@ def add_backup_csv():
                 'product_name': product.product_name,
                 'product_price': '$' + str(product.product_price / 100),
                 'product_quantity': product.product_quantity,
-                'date_updated': product.date_updated.strftime("%#m/%#d/%Y")
+                'date_updated': product.date_updated.strftime("%m/%d/%Y")
                 })
            
 
