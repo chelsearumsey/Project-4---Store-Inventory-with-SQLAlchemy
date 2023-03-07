@@ -196,7 +196,7 @@ def app():
                 session.add(new_product) 
                 print('Product added!')
             else:
-                if product_in_db.date_updated < current_date:
+                if product_in_db.date_updated < current_date or product_in_db.product_price != new_product_price or product_in_db.product_quantity != quantity:
                     product_in_db.product_name = product_name
                     product_in_db.product_price = new_product_price
                     product_in_db.product_quantity = quantity
